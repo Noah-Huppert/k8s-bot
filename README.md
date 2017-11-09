@@ -10,6 +10,21 @@ You communicate with Kube in a command line-ish way. The first word of every
 message must be a valid command. These commands can have sub commands and 
 arguments.  
 
+There is one exception to this, augmentations. Augmentations are arguments you 
+can pass Kube, before the command. To change the behavior of Kube in a way that 
+is independent of any command. 
+
+Avaliable augmentations are:
+
+- ⭕ `thread`
+    - Forces Kube to reply in a thread
+- ⭕ `channel`
+    - Forces Kube to reply in the channel
+- ⭕ `pm`
+    - Forces Kube to reply in a private message
+
+Example: Making Kube describe a resource in the channel: `@kube channel describe ingress/application-name`.
+
 Most commands have a `<query>` argument. Which specifies which Kubernetes 
 resource you are trying to perform an action on. This query format follows the 
 exact same syntax as the kubectl tool: `<type>/<name>[/<revision>]`.
