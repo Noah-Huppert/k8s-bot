@@ -110,6 +110,13 @@ are also provided:
                 - `channel`: Respond in the channel message was sent in
                 - `thread`: Respond in a thread, in the channel the message was 
                             sent in
+- ⭕ `shutup [sorry]`
+    - Emergency kill switch if Kube is misbehaving. Will disallow all 
+      communication until the command is called again with the `sorry` keyword
+    - If the `sorry` keyword is present any existing blocks on Kube's 
+      communication will be removed. And Kube will return to normal. However 
+      messages scheduled to send during communication blocks time will be 
+      dropped (and logged). As they might be incorrect or buggy.
 - ⭕ `help`
     - Prints this command list
 
