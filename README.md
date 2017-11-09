@@ -1,6 +1,11 @@
 # kube-bot
 A Kubernetes Slack bot. Addressed by the named `@kube`.  
 
+# Table Of Contents
+- [Commands](#commands)
+- [Contributing](#contributing)
+
+# Commands
 You communicate with Kube in a command line-ish way. The first word of every 
 message must be a valid command. These commands can have sub commands and 
 arguments.  
@@ -83,3 +88,13 @@ are also provided:
       set to the specified value
     - Valid keys are:
         - To be determined
+- ⭕ `help`
+    - Prints this command list
+
+# Contributing
+Kube Bot is an Open Source Software project. And welcomes contributions from 
+anyone and everyone.  
+
+Check out the [issue tracker](https://github.com/Noah-Huppert/kube-bot) to find 
+work. Or open an issue if you found a bug or had an idea for a new feature. 
+Or, even better, open a Pull Request with the code for that new feature!
