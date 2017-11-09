@@ -72,3 +72,12 @@ are also provided:
       updates about
         - If none are provided, you are signed up for updates about all branches 
         - Multiple branch names can be provided, separated by spaces
+- ⭕ `config [<key>] [<value>]`
+    - Manages kube-bot configuration
+    - If no key is provided, a general settings message will be sent in 
+      response. Where users can edit settings via a in Slack UI of sorts
+    - One can view a key's value by providing only the key argument
+    - If only the key argument is provided, but no parameter matches exactly, 
+      a search will be performed, and similar settings keys will be listed
+    - If the key and value arguments are provided, the specified option will be 
+      set to the specified value
