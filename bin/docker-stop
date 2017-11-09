@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Name of the container
+if [[ -z "$CONTAINER_NAME" ]]; then
+    CONTAINER_NAME="kube-bot:latest"
+fi
+
+# Returns 1 if the kube-bot container was found in the `docker ps` output
+function check-ps-out() {
+    echo $* | tail -n +2 | sed -e 's/\s\{2,\}/ /g' | cut -d ' ' -f 2 | grep -o "$CONTAINER_NAME" | wc -l
+}
+
+# First check if running
+if [[ $(docker ps | check-ps-out) == 1 ]]; then
+    docker kill "$CONTAINER_NAME"
+elif [[ $(docker ps -a | check-ps-out) == 1 ]]; then
+    docker rm "$CONTAINER_NAME"
+else
+    echo "Docker container not running"
+fi
