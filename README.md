@@ -11,11 +11,13 @@ exact same syntax as the kubectl tool: `<type>/<name>[/<revision>]`.
 
 Kube responds to the following commands:
 
-- `get <query>`
+✅ = Available, ⭕ = In Progress
+
+⭕ `get <query>`
     - Retrieves a list of resources based on the given query
-- `describe <query`>
+⭕ `describe <query`>
     - Shows detailed information about a particular item specified by the query
-- `rollout <sub command> <query>`
+⭕ `rollout <sub command> <query>`
     - Performs actions related to application rollouts (updating versions, 
       deployments)
     - The application to perform rollout related actions on is specified by the 
@@ -31,23 +33,23 @@ Kube responds to the following commands:
             - Shows the rollout history for the specified resource
         - `undo`
             - Revert to the specified rollout
-- `scale <query> <number>`
+⭕ `scale <query> <number>`
     - Scales the resource specify by the provided query to the provided number 
       of replicas
-- `logs <query> [top | bottom] [<lines>]`
+⭕ `logs <query> [top | bottom] [<lines>]`
     - Displays the logs from the resource specified by the query
     - By default 25 lines from the logs are shown. This can be changed by 
       providing your own number of lines as an argument
     - By default this command will display the # of lines specified from the 
       bottom of the logs. This can be changed by providing the `top` or `bottom` 
       keywords (Not both)
-- `version`
+⭕ `version`
     - Displays version information about kube-bot
 
 All of which are existing kubectl commands. The following original commands 
 are also provided:
 
-- `track <repo name> [#<channels...>] [anyones | mine | none] [all | failure | success] [<branches...>]`
+⭕ `track <repo name> [#<channels...>] [anyones | mine | none] [all | failure | success] [<branches...>]`
     - Signs you up to receive messages about application deployments
     - The repo name argument should be the name of a GitHub repo. In the form 
       `username/repository`.
