@@ -77,17 +77,39 @@ are also provided:
       updates about
         - If none are provided, you are signed up for updates about all branches 
         - Multiple branch names can be provided, separated by spaces
+- ⭕ `group <sub command> <user> <group>`
+    - Performs group related actions on the specified user and group
+    - Valid sub commands are:
+        - `add`
+            - Adds the user to the group
+            - If the specified group does not exist yet, creates it
+        - `remove`
+            - Removes the user from the group
+- ⭕ `access [<action> <entity> <resource>]`
+    - Controls access to the specified resource
+    - If no arguments are provided, a in Slack UI message is sent back with 
+      controls for access. This will be sent to the user in a personal message.
+    - The action argument can be either: `allow` or `deny`. And either grants 
+      or blocks access to the specified resource
+    - The entity argument can be either a user name or a group name
 - ⭕ `config [<key>] [<value>]`
     - Manages kube-bot configuration
     - If no key is provided, a general settings message will be sent in 
-      response. Where users can edit settings via a in Slack UI of sorts
+      response. Where users can edit settings via a in Slack UI of sorts. This 
+      will be sent in a personal message
     - One can view a key's value by providing only the key argument
     - If only the key argument is provided, but no parameter matches exactly, 
       a search will be performed, and similar settings keys will be listed
     - If the key and value arguments are provided, the specified option will be 
       set to the specified value
     - Valid keys are:
-        - To be determined
+        - `reply`
+            - Specifies the method of response Kube bot should use by default
+            - Default value is `thread`
+            - Values are:
+                - `channel`: Respond in the channel message was sent in
+                - `thread`: Respond in a thread, in the channel the message was 
+                            sent in
 - ⭕ `help`
     - Prints this command list
 
