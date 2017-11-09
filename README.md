@@ -81,3 +81,5 @@ are also provided:
       a search will be performed, and similar settings keys will be listed
     - If the key and value arguments are provided, the specified option will be 
       set to the specified value
+    - Valid keys are:
+        - To be determined
