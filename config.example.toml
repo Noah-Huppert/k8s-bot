@@ -1,0 +1,5 @@
+SlackAPIToken = "fake"
+KubeConfigPath = ""
+
+[Bot]
+Name = "kube"

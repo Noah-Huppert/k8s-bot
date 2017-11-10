@@ -1,14 +1,16 @@
 package main
 
 import (
-	"./bot"
-	"./config"
-	"fmt"
+	"log"
+
+	"github.com/Noah-Huppert/kube-bot/bot"
+	"github.com/Noah-Huppert/kube-bot/config"
 )
 
 func main() {
+	// Logger
 	// Load config
-	config := config.LoadConfig()
+	config, err := config.LoadConfig()
 	if err != nil {
 		fmt.Printf("error loading config: %s\n", err.Error())
 		return

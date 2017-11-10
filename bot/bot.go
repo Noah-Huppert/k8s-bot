@@ -1,8 +1,10 @@
 package bot
 
 import (
-	"../config"
 	"context"
+	"log"
+
+	"github.com/Noah-Huppert/kube-bot/config"
 )
 
 // Bot acts as a chat bot based interface to the Kubernetes API. Leveraging the
@@ -18,17 +20,21 @@ type Bot struct {
 
 	// Name is the Slack username the Bot will respond to
 	Name string
+
+	// logger is used to record debug messages
+	logger log.Logger
 }
 
 // NewBot creates a new Bot instance from the parameters specified in the
 // Config object
 func NewBot(config config.Config) Bot {
-	return Bot{Name: config.bot.name}
+	return Bot{Name: config.Bot.Name}
 }
 
 // Start begins the process of receiving and responding to user messages.
 // Returns nil if Bot starts successfully, or the error that occurred otherwise.
 func (b Bot) Start() error {
+
 	return nil
 }
 

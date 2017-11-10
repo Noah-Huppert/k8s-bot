@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-)
 
-import "github.com/pelletier/go-toml"
+	"github.com/BurntSushi/toml"
+)
 
 // Config holds the settings for the Kube Bot application
 type Config struct {
@@ -40,14 +41,15 @@ const PathEnvKey string = "APP_CONFIG_PATH"
 // By default it will load from the "config.toml" file in the working
 // directory. This can be modified by setting the APP_CONFIG_PATH environment
 // variable.
-func LoadConfig() (error, Config) {
+func LoadConfig() (Config, error) {
+	var config Config
 	var filePath string
 
 	// Default file location
 	if cwd, err := os.Getwd(); err == nil {
 		filePath = filepath.Join(cwd, "config.toml")
 	} else {
-		return fmt.Errorf("error getting working directory: %s", err.Error())
+		return config, fmt.Errorf("error getting working directory: %s", err.Error())
 	}
 
 	// Check if PathEnvKey is set
@@ -57,22 +59,21 @@ func LoadConfig() (error, Config) {
 	}
 
 	// Check if filePath exists
-	if _, err := os.Stat(val); os.IsNotExist(err) {
-		return fmt.Errorf("config path \"%s\" does not exist", PathEnvKey, val)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return config, fmt.Errorf("config path does not exist: %s", filePath)
 	}
 
 	// Read file contents
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("error reading config file \"%s\": %s", filePath, err.Error())
+		return config, fmt.Errorf("error reading config file \"%s\": %s", filePath, err.Error())
 	}
 
 	// Load toml
-	var config Config
-	if _, err := toml.Unmarshal(data, &config); err != nil {
-		return fmt.Errorf("failed to parse toml config file \"%s\": %s", filePath, err.Error())
+	if _, err := toml.Decode(string(data), &config); err != nil {
+		return config, fmt.Errorf("failed to parse toml config file \"%s\": %s", filePath, err.Error())
 	}
 
 	// All done, return
-	return config
+	return config, nil
 }

@@ -21,4 +21,4 @@ COPY . .
 RUN dep ensure
 
 # Start
-CMD go run index.go
+CMD go run main.go
