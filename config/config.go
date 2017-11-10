@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/BurntSushi/toml"
 )
+
+import "github.com/pelletier/go-toml"
 
 // Config holds the settings for the Kube Bot application
 type Config struct {
@@ -69,7 +69,7 @@ func LoadConfig() (error, Config) {
 
 	// Load toml
 	var config Config
-	if _, err := toml.Decode(data, &config); err != nil {
+	if _, err := toml.Unmarshal(data, &config); err != nil {
 		return fmt.Errorf("failed to parse toml config file \"%s\": %s", filePath, err.Error())
 	}
 
