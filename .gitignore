@@ -1,3 +1,5 @@
-node_modules
+# OSX
 .DS_Store*
-.hubot_history
+
+# Settings
+config.toml

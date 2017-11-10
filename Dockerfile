@@ -1,16 +1,24 @@
-FROM node:alpine
+FROM golang:alpine
 
-# Dependencies
-COPY package.json .
-COPY package-lock.json .
-COPY node_modules node_modules
+# Go Path
+WORKDIR /go
+ENV GOPATH /go
 
-RUN npm install
+# Install Git: To install Dep
+RUN apk update; apk add git
 
-# Rest of code
-COPY external-scripts.json hubot-scripts.json ./
-COPY scripts scripts
-COPY bin bin
+# Install Dep tool
+RUN go get -u github.com/golang/dep/cmd/dep
 
-# Run
-CMD npm start
+# Copy source
+ENV APP_PATH $GOPATH/src/github.com/Noah-Huppert/kube-bot
+RUN mkdir -p "$APP_PATH"
+WORKDIR "$APP_PATH"
+
+COPY . .
+
+# Install dependencies
+RUN dep ensure
+
+# Start
+CMD go run index.go

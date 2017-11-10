@@ -1,10 +1,17 @@
-.PHONY: run container stop
+.PHONY: run docker-run container docker-stop
 
-run: container stop
-	docker run -it --rm --name k8s-bot k8s-bot:devel
+run:
+	go run index.go
+
+# Parameters
+TAG=devel
+IMAGE=kube-bot
+
+docker-run: container docker-stop
+	docker run -it --rm --name ${IMAGE} ${IMAGE}:${TAG}
 
 container:
-	docker build -t k8s-bot:devel .
+	docker build -t ${IMAGE}:${TAG} .
 
-stop:
+docker-stop:
 	bin/docker-stop
