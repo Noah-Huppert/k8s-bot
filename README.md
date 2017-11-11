@@ -3,6 +3,7 @@ A Kubernetes Slack bot. Addressed by the named `@kube`.
 
 # Table Of Contents
 - [Commands](#commands)
+- [Permissions](#permissions)
 - [Contributing](#contributing)
 
 # Commands
@@ -140,6 +141,13 @@ are also provided:
             - Retrieves Kube bot's current health
 - ⭕ `help`
     - Prints this command list
+
+# Permissions
+Kube bot has permission model built in. Which controls who is allowed to do what. 
+Permissions are controlled on a per action basis. Actions are scoped around the 
+effect of a command and the resource it acts on.  
+
+Actions are represented by strings in the format `<resource>.<action>`. 
 
 # Contributing
 Kube Bot is an Open Source Software project. And welcomes contributions from 
