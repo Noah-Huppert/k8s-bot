@@ -132,6 +132,12 @@ are also provided:
       communication will be removed. And Kube will return to normal. However 
       messages scheduled to send during communication blocks time will be 
       dropped (and logged). As they might be incorrect or buggy.
+- ⭕ `your <key>`
+    - Used to retrieve internal Kube bot related information. The information 
+      retrieved is based on the key argument
+    - Valid key values are:
+        - `health`
+            - Retrieves Kube bot's current health
 - ⭕ `help`
     - Prints this command list
 
