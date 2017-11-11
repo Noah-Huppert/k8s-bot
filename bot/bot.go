@@ -125,9 +125,14 @@ func (b Bot) handleMessage(event *slack.MessageEvent) error {
 	// Log
 	b.logger.Printf("received message: %s\n", msg.Text)
 
+	// Thumb down
+	ref := slack.NewRefToMessage(msg.Channel, msg.Timestamp)
+	if err := b.slackAPI.AddReaction("thumbsdown", ref); err != nil {
+		b.logger.Printf("error: failed to thumbs down msg: %s\n", err.Error())
+	}
+
 	// Echo
-	out := b.slackRTM.NewOutgoingMessage(msg.Text, event.Channel)
-	b.slackRTM.SendMessage(out)
+	//b.slackRTM.SendMessage(b.slackRTM.NewOutgoingMessage(msg.Text, msg.Channel))
 
 	return nil
 }
