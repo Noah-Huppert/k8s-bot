@@ -1,5 +1,7 @@
 package cmds
 
+import "errors"
+
 // Cmd holds the definition of a command. To be registered with a central
 // registry
 type Cmd struct {

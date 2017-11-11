@@ -2,9 +2,12 @@ package bot
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/Noah-Huppert/kube-bot/cmds"
 	"github.com/Noah-Huppert/kube-bot/config"
 	"github.com/nlopes/slack"
 )
@@ -39,27 +42,45 @@ type Bot struct {
 	// slackRTM is the Slack API real time messaging client used to receive and
 	// respond to Slack API events
 	slackRTM *slack.RTM
+
+	// registry holds all commands the bot can respond to
+	registry cmds.Registry
 }
 
 // NewBot creates a new Bot instance from the parameters specified in the
-// Config object
-func NewBot(ctx context.Context, cfg config.Config) Bot {
+// Config object. An error is return if one occurs, nil on success.
+func NewBot(ctx context.Context, cfg config.Config) (Bot, error) {
+	var bot Bot
+
+	// Config
+	bot.Config = cfg
+
 	// Loggers
-	logger := log.New(os.Stdout, "bot: ", 0)
-	slackLogger := log.New(os.Stdout, "bot: slack api: ", 0)
+	bot.logger = log.New(os.Stdout, "bot: ", 0)
+	bot.slackLogger = log.New(os.Stdout, "bot: slack api: ", 0)
 
 	// Context
 	ctx, ctxCancelFn := context.WithCancel(ctx)
+	bot.ctx = ctx
+	bot.ctxCancelFn = ctxCancelFn
+
+	// Name
+	bot.Name = cfg.Bot.Name
+
+	// Registry
+	bot.registry = cmds.NewDefaultRegistry()
+	keyword, err := cmds.NewKeyword("reply", []string{"thread", "channel", "pm"}, true)
+	if err != nil {
+		return bot, fmt.Errorf("failed to create reply keyword: %s", err.Error())
+	}
+
+	err = bot.registry.AddAugment(keyword)
+	if err != nil {
+		return bot, errors.New("Could not add reply augment to registry")
+	}
 
 	// Make
-	return Bot{
-		Name:        cfg.Bot.Name,
-		logger:      logger,
-		slackLogger: slackLogger,
-		ctx:         ctx,
-		ctxCancelFn: ctxCancelFn,
-		Config:      cfg,
-	}
+	return bot, nil
 }
 
 // Run begins the process of receiving and responding to user messages. This
@@ -72,7 +93,7 @@ func (b Bot) Run() error {
 	b.logger.Println("running bot")
 
 	// Init Slack Lib
-	b.slackAPI = slack.New(b.Config.SlackAPIToken)
+	b.slackAPI = slack.New(b.Config.Slack.Token)
 	slack.SetLogger(b.slackLogger)
 
 	// Connect
@@ -110,6 +131,15 @@ func (b Bot) handleEvents(in <-chan slack.RTMEvent) error {
 				}
 			case *slack.InvalidAuthEvent:
 				b.logger.Println("invalid credentials")
+			case *slack.ConnectionErrorEvent:
+				b.logger.Printf("connection error: %s", event.Error())
+			case *slack.HelloEvent, *slack.ConnectingEvent, *slack.ConnectedEvent:
+				continue
+			default:
+				// If logging unhandled events
+				if b.Config.Slack.LogUnhandledEvents {
+					b.logger.Printf("received unhandled event: %s %#s", msg.Type, event)
+				}
 			}
 		}
 	}
@@ -125,16 +155,28 @@ func (b Bot) handleMessage(event *slack.MessageEvent) error {
 	// Log
 	b.logger.Printf("received message: %s\n", msg.Text)
 
-	// Thumb down
-	ref := slack.NewRefToMessage(msg.Channel, msg.Timestamp)
-	if err := b.slackAPI.AddReaction("thumbsdown", ref); err != nil {
-		b.logger.Printf("error: failed to thumbs down msg: %s\n", err.Error())
+	// Test augments
+	if cmdReq, err := cmds.ParseText(msg.Text, b.registry); err == nil {
+		// Format message
+		str := "I'm still learning, here are your arguments:"
+
+		for key, val := range cmdReq.Augments {
+			str += fmt.Sprintf("\n- %s=%s", key, val)
+		}
+
+		// Send
+		b.SendTxt(str, msg.Channel)
+	} else {
+		b.SendTxt(fmt.Sprintf("Whoops I had a brain fart: %s", err.Error()), msg.Channel)
 	}
 
-	// Echo
-	//b.slackRTM.SendMessage(b.slackRTM.NewOutgoingMessage(msg.Text, msg.Channel))
-
 	return nil
+}
+
+// SendTxt uses the slackRTM client to send a text message to the specified
+// channel.
+func (b Bot) SendTxt(txt string, channel string) {
+	b.slackRTM.SendMessage(b.slackRTM.NewOutgoingMessage(txt, channel))
 }
 
 // Stop ends the process of receiving and responding to user messages. This

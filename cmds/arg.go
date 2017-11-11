@@ -1,5 +1,7 @@
 package cmds
 
+import "errors"
+
 // Arg holds the definition for a command argument
 type Arg struct {
 	// Name of argument, to be used in documentation, error message, ect

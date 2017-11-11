@@ -1,5 +1,10 @@
-SlackAPIToken = "fake"
-KubeConfigPath = ""
-
 [Bot]
 Name = "kube"
+
+[Slack]
+Token = "fake"
+
+LogUnhandledEvents = false
+
+[Kubernetes]
+ConfigPath = ""

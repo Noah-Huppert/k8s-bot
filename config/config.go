@@ -11,16 +11,14 @@ import (
 
 // Config holds the settings for the Kube Bot application
 type Config struct {
-	// SlackAPIToken is the token to use for Slack API authentication
-	SlackAPIToken string
-
-	// KubeConfigPath is the path to a Kubernetes auth configuration file.
-	// Which is normally created by the kubectl.
-	// If empty the value will default to "$HOME/.kube/config".
-	KubeConfigPath string
-
 	// Bot holds bot specified configuration
 	Bot BotConfig
+
+	// Slack config
+	Slack SlackConfig
+
+	// Kubernetes config
+	Kubernetes KubernetesConfig
 }
 
 // BotConfig holds Bot specified settings. Which are embedded in the Config
@@ -28,6 +26,24 @@ type Config struct {
 type BotConfig struct {
 	// Name is the Slack username the Bot will respond to
 	Name string
+}
+
+// SlackConfig holds Slack specific settings
+type SlackConfig struct {
+	// Token is the token to use for Slack API authentication
+	Token string
+
+	// LogUnhandledEvents indicates if Slack events that the bot receives,
+	// but does not handle, should be printed to the console.
+	LogUnhandledEvents bool
+}
+
+// KubernetesConfig holds Kubernetes specified settings
+type KubernetesConfig struct {
+	// ConfigPath is the path to a Kubernetes auth configuration file.
+	// Which is normally created by the kubectl.
+	// If empty the value will default to "$HOME/.kube/config".
+	ConfigPath string
 }
 
 // PathEnvKey is the name of the environment variable which can be used to

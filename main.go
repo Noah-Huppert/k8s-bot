@@ -23,7 +23,10 @@ func main() {
 
 	// Create Bot
 	ctx := context.Background()
-	kube := bot.NewBot(ctx, cfg)
+	kube, err := bot.NewBot(ctx, cfg)
+	if err != nil {
+		logger.Printf("error creating bot: %s\n", err.Error())
+	}
 
 	// Handle system Signals
 	sigChan := make(chan os.Signal, 1)

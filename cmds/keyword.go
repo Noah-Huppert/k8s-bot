@@ -1,5 +1,7 @@
 package cmds
 
+import "errors"
+
 // Keyword holds information for flag like values which can be included with a
 // command.
 //
@@ -24,12 +26,12 @@ type Keyword struct {
 
 // NewKeyword creates and returns a new Keyword from the values provided.
 // An error is returned if one occurs, nil otherwise.
-func NewKeyword(name string, values []string, optional bool) (Keyword, error) {
-	var Keyword keyword
+func NewKeyword(name string, values []string, optional bool) (*Keyword, error) {
+	var keyword Keyword
 
 	// Check if name is empty
 	if len(name) == 0 {
-		return Keyword, errors.New("Name was empty, can not be")
+		return &keyword, errors.New("Name was empty, can not be")
 	}
 
 	// Create
@@ -39,5 +41,5 @@ func NewKeyword(name string, values []string, optional bool) (Keyword, error) {
 		Optional: optional,
 	}
 
-	return keyword, nil
+	return &keyword, nil
 }
