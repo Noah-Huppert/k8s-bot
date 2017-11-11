@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os"
+	"os/signal"
 
 	"github.com/Noah-Huppert/kube-bot/bot"
 	"github.com/Noah-Huppert/kube-bot/config"
@@ -9,29 +12,35 @@ import (
 
 func main() {
 	// Logger
+	logger := log.New(os.Stdout, "main: ", 0)
+
 	// Load config
-	config, err := config.LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		fmt.Printf("error loading config: %s\n", err.Error())
+		logger.Printf("error loading config: %s\n", err.Error())
 		return
 	}
 
-	// Start Bot
-	kube := bot.NewBot(config)
-	if err := kube.Start(); err != nil {
-		fmt.Printf("error starting bot: %s\n", err.Error())
+	// Create Bot
+	ctx := context.Background()
+	kube := bot.NewBot(ctx, cfg)
+
+	// Handle system Signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
+	go func() {
+		for range sigChan {
+			logger.Println("received SIGINT")
+
+			kube.Stop()
+		}
+	}()
+
+	// Run Bot
+	logger.Println("starting bot")
+
+	if err := kube.Run(); err != nil {
+		logger.Printf("error running bot: %s\n", err.Error())
 		return
 	}
-
-	fmt.Println("started bot")
-
-	// Stop Bot
-	fmt.Println("stopping bot")
-
-	if err := kube.Stop(); err != nil {
-		fmt.Printf("error stopping bot: %s\n", err.Error())
-		return
-	}
-
-	fmt.Println("stopped bot")
 }
