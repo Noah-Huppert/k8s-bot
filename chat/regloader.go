@@ -1,4 +1,4 @@
-package cmds
+package chat
 
 // RegistryLoader is used to easily add file's command and augment definitions,
 // leveraging the RegLoadable interface

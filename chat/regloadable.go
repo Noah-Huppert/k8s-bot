@@ -1,4 +1,4 @@
-package cmds
+package chat
 
 // RegLoadable wraps the Load method. Which is used to by the RegistryLoader
 // to add command and augment definitions.

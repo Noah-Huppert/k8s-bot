@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Noah-Huppert/kube-bot/cmds"
+	"github.com/Noah-Huppert/kube-bot/chat"
 	"github.com/Noah-Huppert/kube-bot/config"
 	"github.com/nlopes/slack"
 )
@@ -44,7 +44,7 @@ type Bot struct {
 	slackRTM *slack.RTM
 
 	// registry holds all commands the bot can respond to
-	registry cmds.Registry
+	registry chat.Registry
 }
 
 // NewBot creates a new Bot instance from the parameters specified in the
@@ -68,8 +68,8 @@ func NewBot(ctx context.Context, cfg config.Config) (Bot, error) {
 	bot.Name = cfg.Bot.Name
 
 	// Registry
-	bot.registry = cmds.NewDefaultRegistry()
-	keyword, err := cmds.NewKeyword("reply", []string{"thread", "channel", "pm"}, true)
+	bot.registry = chat.NewDefaultRegistry()
+	keyword, err := chat.NewKeyword("reply", []string{"thread", "channel", "pm"}, true)
 	if err != nil {
 		return bot, fmt.Errorf("failed to create reply keyword: %s", err.Error())
 	}
@@ -156,7 +156,7 @@ func (b Bot) handleMessage(event *slack.MessageEvent) error {
 	b.logger.Printf("received message: %s\n", msg.Text)
 
 	// Test augments
-	if cmdReq, err := cmds.ParseText(msg.Text, b.registry); err == nil {
+	if cmdReq, err := chat.ParseText(msg.Text, b.registry); err == nil {
 		// Format message
 		str := "I'm still learning, here are your arguments:"
 

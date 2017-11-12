@@ -1,4 +1,4 @@
-package cmds
+package chat
 
 // CmdReq holds information about command requests received by the bot. Values
 // populated by Parse()

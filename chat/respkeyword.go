@@ -1,4 +1,4 @@
-package cmds
+package chat
 
 type Augment string
 
