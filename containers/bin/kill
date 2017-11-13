@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Check name given
+if [[ -z "$1" ]]; then
+    echo "Error: first argument, name, not given"
+    exit 1
+fi
+name="$1"
+
+# Check pid file exists
+pidfile="$name.pid"
+if [[ ! -f "$pidfile" ]]; then
+    echo "Error: no PID file \"$pidfile\""
+    exit 1
+fi
+
+# Kill and remove pid file
+kill "$(cat $pidfile)" && rm "$pidfile"

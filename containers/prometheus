@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Vars
+name=prometheus
+pidfile="$name.pid"
+
+# Check not running
+if [[ -f "$pidfile" ]]; then
+    echo "Error: found pidfile \"$pidfile\", instance running somewhere else"
+    exit 1
+fi
+
+# Data dir
+datadir="$PWD/data/$name"
+mkdir -p "$datadir"
+
+rkt --insecure-options=image \
+    run \
+    --port 9090-tcp:9090 \
+    --interactive \
+    --volume prometheus-data,kind=host,source="$datadir" \
+    --mount volume=prometheus-data,target=/prometheus-data \
+    docker://prom/prometheus &
+
+# Save pid
+echo "$!" > "$pidfile"

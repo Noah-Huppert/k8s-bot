@@ -1,0 +1,13 @@
+#
+# /etc/hosts: static lookup table for host names
+#
+
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	localhost.local	localhost
+::1		localhost.local	localhost
+127.0.1.1       katla.local       katla
+
+# End of file
+# grafana (auto generated) - start
+10.10.10.10    grafana.local
+# grafana - end

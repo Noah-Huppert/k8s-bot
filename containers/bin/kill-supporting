@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+echo "Kill Redis"
+./bin/kill redis
+
+echo "Kill Prometheus"
+./bin/kill prometheus
+
+echo "Kill Grafana"
+./bin/kill grafana

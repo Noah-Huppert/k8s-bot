@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Vars
+name=grafana
+pidfile="$name.pid"
+
+# Check not running
+if [[ -f "$pidfile" ]]; then
+    echo "Error: found pidfile \"$pidfile\", instance running somewhere else"
+    exit 1
+fi
+
+# Data dir
+datadir="$PWD/data/$name"
+mkdir -p "$datadir"
+
+rkt --insecure-options=image \
+    run \
+    --port=3000-tcp:3000 \
+    --set-env=GF_SECURITY_ADMIN_PASSWORD=password \
+    --interactive \
+    --hostname grafana \
+    --volume host-data,kind=host,source="$datadir" \
+    --mount volume=host-data,target=/var/lib/grafana \
+    docker://grafana/grafana &
+
+# Save pid
+echo "$!" > "$pidfile"

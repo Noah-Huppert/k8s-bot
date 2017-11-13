@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+echo "Launching Redis"
+./redis
+
+echo "Launch Prometheus"
+./prometheus
+
+echo "Launching Grafana"
+./grafana

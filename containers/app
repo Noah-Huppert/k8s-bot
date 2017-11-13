@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Build
+sudo acbuild script - << EOF
+
+# Begin
+begin docker://golang:alpine
+set-name kube-bot
+
+# Setup
+#dependency add golang:alpine
+run -- apk update
+run -- apk add --upgrade git
+
+# Dep tool
+run -go- /usr/local/go/bin/go get -u github.com/golang/dep/cmd/dep
+
+# Working dir
+env add APP_PATH "$GOPATH/src/github.com/Noah-Huppert/kube-bot"
+run mkdir -p "$APP_PATH"
+set-working-directory "$APP_PATH"
+
+# Copy dependencies
+
+
+# End
+end
+EOF

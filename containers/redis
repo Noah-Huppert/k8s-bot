@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Vars
+name=redis
+pidfile="$name.pid"
+
+# Check not running
+if [[ -f "$pidfile" ]]; then
+    echo "Error: found pidfile \"$pidfile\", instance running somewhere else"
+    exit 1
+fi
+
+
+rkt --insecure-options=image  \
+        run \
+        --net=host \
+        --interactive \
+        docker://redis &
+
+# Save pid
+echo "$!" > "$pidfile"
