@@ -1,16 +1,21 @@
-.PHONY: run imports lint fmt docker-run container stop
+.PHONY: run imports lint fmt \
+		docker-run container stop \
+		app
+
+# Go src packages
+PKGS=bot chat config *.go
 
 run:
 	go run main.go
 
 imports:
-	goimports -w .
+	goimports -w ${PKGS}
 
 lint:
 	golint github.com/Noah-Huppert/kube-bot
 
 fmt:
-	gofmt -w .
+	gofmt -w ${PKGS}
 
 # Parameters
 TAG=devel
@@ -24,3 +29,7 @@ container:
 
 stop:
 	bin/stop
+
+# Rkt
+app:
+	sudo acbuild script --debug containers/app

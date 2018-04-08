@@ -2,14 +2,15 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/Noah-Huppert/kube-bot/chat"
 	"github.com/Noah-Huppert/kube-bot/config"
+	"github.com/Noah-Huppert/kube-bot/defs"
 	"github.com/nlopes/slack"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 // Bot acts as a chat bot based interface to the Kubernetes API. Leveraging the
@@ -25,9 +26,6 @@ type Bot struct {
 
 	// ctxCancelFn is the cancel function for ctx
 	ctxCancelFn context.CancelFunc
-
-	// Name is the Slack username the Bot will respond to
-	Name string
 
 	// logger is used to record debug messages
 	logger *log.Logger
@@ -45,11 +43,23 @@ type Bot struct {
 
 	// registry holds all commands the bot can respond to
 	registry chat.Registry
+
+	// allParser is used to run a suite of Parsers on received messages
+	allParser *chat.AllParser
+
+	// ims holds the information about personal conversations (aka ims) that
+	// the bot has with users.
+	//
+	// Keys are im channel IDs. Values are
+	// TODO: Bot.ims
+
+	// chatEventCounter
+	chatEventCounter prometheus.Counter
 }
 
 // NewBot creates a new Bot instance from the parameters specified in the
 // Config object. An error is return if one occurs, nil on success.
-func NewBot(ctx context.Context, cfg config.Config) (Bot, error) {
+func NewBot(ctx context.Context, cfg config.Config) (*Bot, error) {
 	var bot Bot
 
 	// Config
@@ -64,23 +74,23 @@ func NewBot(ctx context.Context, cfg config.Config) (Bot, error) {
 	bot.ctx = ctx
 	bot.ctxCancelFn = ctxCancelFn
 
-	// Name
-	bot.Name = cfg.Bot.Name
-
 	// Registry
 	bot.registry = chat.NewDefaultRegistry()
-	keyword, err := chat.NewKeyword("reply", []string{"thread", "channel", "pm"}, true)
-	if err != nil {
-		return bot, fmt.Errorf("failed to create reply keyword: %s", err.Error())
+	allLdr := defs.NewAllLoader()
+	if err := allLdr.Load(bot.registry); err != nil {
+		return nil, fmt.Errorf("error loading registry items: %s", err.Error())
 	}
 
-	err = bot.registry.AddAugment(keyword)
-	if err != nil {
-		return bot, errors.New("Could not add reply augment to registry")
+	bot.chatEventCounter = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "chat_event_count",
+		Help: "Counts the number of chat events received",
+	})
+	if err := prometheus.Register(bot.chatEventCounter); err != nil {
+		return nil, fmt.Errorf("error registering chat event counter metric: %s", err.Error())
 	}
 
 	// Make
-	return bot, nil
+	return &bot, nil
 }
 
 // Run begins the process of receiving and responding to user messages. This
@@ -99,6 +109,9 @@ func (b Bot) Run() error {
 	// Connect
 	b.slackRTM = b.slackAPI.NewRTM()
 	go b.slackRTM.ManageConnection()
+
+	// allParser
+	b.allParser = chat.NewAllParser(b.registry, b.slackAPI, b.slackRTM)
 
 	// Receive
 	go b.handleEvents(b.slackRTM.IncomingEvents)
@@ -124,6 +137,7 @@ func (b Bot) handleEvents(in <-chan slack.RTMEvent) error {
 			return b.ctx.Err()
 		case msg := <-in:
 			// Received Slack API event
+			b.chatEventCounter.Inc()
 			switch event := msg.Data.(type) {
 			case *slack.MessageEvent:
 				if err := b.handleMessage(event); err != nil {
@@ -156,7 +170,7 @@ func (b Bot) handleMessage(event *slack.MessageEvent) error {
 	b.logger.Printf("received message: %s\n", msg.Text)
 
 	// Test augments
-	if cmdReq, err := chat.ParseText(msg.Text, b.registry); err == nil {
+	if cmdReq, err := b.allParser.Parse(msg); err == nil {
 		// Format message
 		str := "I'm still learning, here are your arguments:"
 

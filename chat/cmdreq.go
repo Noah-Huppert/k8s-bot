@@ -6,6 +6,15 @@ type CmdReq struct {
 	// RawText holds the unprocessed message text
 	RawText string
 
+	// Sender holds the ID of the user who sent the message
+	Sender string
+
+	// Channel is the slack channel the message was received in
+	Channel string
+
+	// Relevant indicates if the bot should take action based on this message
+	Relevant bool
+
 	// Augments holds the augments present in the command request
 	Augments map[string]string
 
@@ -17,27 +26,12 @@ type CmdReq struct {
 	Args map[string]string
 }
 
-// EmptyCmdReq initialized a CmdReq with blank values
-func EmptyCmdReq() CmdReq {
+// NewCmdReq initialized a CmdReq with blank values
+func NewCmdReq() *CmdReq {
 	var cmdReq CmdReq
 
 	cmdReq.Augments = make(map[string]string)
 	cmdReq.Args = make(map[string]string)
 
-	return cmdReq
-}
-
-// NewCmdReq creates and returns a new command request. An error is returned
-// if one occurs, nil on success
-func NewCmdReq(augments map[string]string, cmd string, args map[string]string) CmdReq {
-	cmdReq := EmptyCmdReq()
-
-	// Create
-	cmdReq = CmdReq{
-		Augments: augments,
-		Cmd:      cmd,
-		Args:     args,
-	}
-
-	return cmdReq
+	return &cmdReq
 }

@@ -2,7 +2,9 @@
 
 # Vars
 name=prometheus
-pidfile="$name.pid"
+pidfile="$PWD/$name.pid"
+datadir="$PWD/data/$name"
+configdir="$PWD/config/$name"
 
 # Check not running
 if [[ -f "$pidfile" ]]; then
@@ -11,7 +13,6 @@ if [[ -f "$pidfile" ]]; then
 fi
 
 # Data dir
-datadir="$PWD/data/$name"
 mkdir -p "$datadir"
 
 rkt --insecure-options=image \
@@ -19,7 +20,10 @@ rkt --insecure-options=image \
     --port 9090-tcp:9090 \
     --interactive \
     --volume prometheus-data,kind=host,source="$datadir" \
+    --volume prometheus-config,kind=host,source="$configdir" \
     --mount volume=prometheus-data,target=/prometheus-data \
+    --mount volume=prometheus-config,target=/prometheus-config \
+    --exec '/bin/prometheus --config.file=/prometheus-config/prometheus.yml' \
     docker://prom/prometheus &
 
 # Save pid

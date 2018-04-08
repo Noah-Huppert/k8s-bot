@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/Noah-Huppert/kube-bot/bot"
 	"github.com/Noah-Huppert/kube-bot/config"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -36,6 +38,14 @@ func main() {
 			logger.Println("received SIGINT")
 
 			kube.Stop()
+		}
+	}()
+
+	// Metrics
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		if err := http.ListenAndServe(":8080", nil); err != nil {
+			logger.Printf("error serving metrics: %s", err.Error())
 		}
 	}()
 
