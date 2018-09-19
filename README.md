@@ -1,3 +1,5 @@
+Project status: Not completed | On hold
+
 # kube-bot
 A Kubernetes Slack bot. Addressed by the named `@kube`.  
 
